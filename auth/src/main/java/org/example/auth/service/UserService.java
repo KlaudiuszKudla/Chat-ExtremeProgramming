@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.auth.entity.Role;
 import org.example.auth.entity.User;
 import org.example.auth.entity.UserRegisterDTO;
+import org.example.auth.exceptions.UserExistingWithMail;
+import org.example.auth.exceptions.UserExistingWithName;
 import org.example.auth.repository.UserRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +23,15 @@ public class UserService {
 
 
 
-    public void register(UserRegisterDTO userRegisterDTO) {
+    public void register(UserRegisterDTO userRegisterDTO) throws UserExistingWithName, UserExistingWithMail {
+        userRepository.findUserByLogin(userRegisterDTO.getLogin()).ifPresent(value->{
+            log.info("Users alredy exist with this name");
+            throw new UserExistingWithName("Users alredy exist with this name");
+        });
+        userRepository.findUserByEmail(userRegisterDTO.getEmail()).ifPresent(value->{
+            log.info("Users alredy exist with this mail");
+            throw new UserExistingWithMail("Users alredy exist with this mail");
+        });
         User user = new User();
         user.setLocked(true);
         user.setEnabled(false);
@@ -32,6 +42,7 @@ public class UserService {
 
         saveUser(user);
     }
+
 
     private User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
