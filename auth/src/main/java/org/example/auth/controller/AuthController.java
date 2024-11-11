@@ -1,10 +1,12 @@
 package org.example.auth.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.auth.entity.Code;
 import org.example.auth.entity.Response;
+import org.example.auth.entity.User;
 import org.example.auth.entity.UserRegisterDTO;
 import org.example.auth.exceptions.UserExistingWithMail;
 import org.example.auth.exceptions.UserExistingWithName;
@@ -38,5 +40,11 @@ public class AuthController {
             log.info("User dont exist in database with this mail");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(Code.USER_EXIST_WITH_MAIL));
         }
+    }
+
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public ResponseEntity<?> login(@RequestBody User user, HttpServletResponse response) {
+        log.info("--TRY LOGIN USER");
+        return userService.login(response, user);
     }
 }
