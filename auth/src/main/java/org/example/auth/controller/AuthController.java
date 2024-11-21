@@ -62,4 +62,17 @@ public class AuthController {
             return ResponseEntity.status(400).body(new Response(Code.USER_NOT_EXIST));
         }
     }
+
+    @RequestMapping(path = "/reset-password", method = RequestMethod.PATCH)
+    public ResponseEntity<Response> recoveryMail(@RequestBody ChangePasswordData changePasswordData) {
+        try {
+            log.info("--START recoveryMail");
+            userService.restPassword(changePasswordData);
+            log.info("--STOP recoveryMail");
+            return ResponseEntity.ok(new Response(Code.SUCCESS));
+        } catch (UserDontExistException e) {
+            log.info("User dont exist in database");
+            return ResponseEntity.status(400).body(new Response(Code.USER_NOT_EXIST));
+        }
+    }
 }

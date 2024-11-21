@@ -9,6 +9,7 @@ import org.example.auth.entity.*;
 import org.example.auth.exceptions.UserDontExistException;
 import org.example.auth.exceptions.UserExistingWithMail;
 import org.example.auth.exceptions.UserExistingWithName;
+import org.example.auth.repository.ResetOperationsRepository;
 import org.example.auth.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ResetOperationService resetOperationService;
+    private final ResetOperationsRepository resetOperationsRepository;
     private final AuthenticationManager authenticationManager;
     private final CookiService cookiService;
     private final EmailService emailService;
@@ -102,6 +104,21 @@ public class UserService {
             ResetOperations resetOperations = resetOperationService.initResetOperation(user);
             emailService.sendPasswordRecovery(user,resetOperations.getUid());
             return;
+        }
+        throw new UserDontExistException("User dont exist");
+    }
+
+    public void restPassword(ChangePasswordData changePasswordData) throws UserDontExistException{
+        ResetOperations resetOperations = resetOperationsRepository.findByUid(changePasswordData.getUid()).orElse(null);
+        if (resetOperations != null){
+            User user = userRepository.findUserByUuid(resetOperations.getUser().getUuid()).orElse(null);
+
+            if (user != null){
+                user.setPassword(changePasswordData.getPassword());
+                saveUser(user);
+                resetOperationService.endOperation(resetOperations.getUid());
+                return;
+            }
         }
         throw new UserDontExistException("User dont exist");
     }
