@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.auth.entity.*;
+import org.example.auth.exceptions.UserDontExistException;
 import org.example.auth.exceptions.UserExistingWithMail;
 import org.example.auth.exceptions.UserExistingWithName;
 import org.example.auth.repository.UserRepository;
@@ -56,6 +57,17 @@ public class UserService {
 
         saveUser(user);
         emailService.sendActivation(user);
+    }
+
+    public void activateUser(String uid) throws UserDontExistException {
+        User user = userRepository.findUserByUuid(uid).orElse(null);
+        if (user != null){
+            user.setLocked(false);
+            user.setEnabled(true);
+            userRepository.save(user);
+            return;
+        }
+        throw new UserDontExistException("User dont exist");
     }
 
     public ResponseEntity<?> login(HttpServletResponse response, User authRequest) {
