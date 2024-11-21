@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -121,6 +123,16 @@ public class UserService {
             }
         }
         throw new UserDontExistException("User dont exist");
+    }
+
+    public void changeUserData(ChangeUserData changeUserData) throws UserDontExistException {
+        User user = userRepository.findUserById(changeUserData.getId())
+                .orElseThrow(() -> new UserDontExistException("User doesn't exist"));
+
+        Optional.ofNullable(changeUserData.getLogin()).ifPresent(user::setLogin);
+        Optional.ofNullable(changeUserData.getPassword()).ifPresent(user::setPassword);
+        Optional.ofNullable(changeUserData.getImageUrl()).ifPresent(user::setImageUuid);
+        saveUser(user);
     }
 
     private String generateToken(String username,int exp) {
