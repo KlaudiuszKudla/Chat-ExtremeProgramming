@@ -26,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ResetOperationService resetOperationService;
     private final AuthenticationManager authenticationManager;
     private final CookiService cookiService;
     private final EmailService emailService;
@@ -93,6 +94,16 @@ public class UserService {
             }
         }
         return ResponseEntity.ok(new Response(Code.DATA_INCORRECT));
+    }
+
+    public void recoveryPassword(String email) throws UserDontExistException{
+        User user = userRepository.findUserByEmail(email).orElse(null);
+        if (user != null){
+            ResetOperations resetOperations = resetOperationService.initResetOperation(user);
+            emailService.sendPasswordRecovery(user,resetOperations.getUid());
+            return;
+        }
+        throw new UserDontExistException("User dont exist");
     }
 
     private String generateToken(String username,int exp) {

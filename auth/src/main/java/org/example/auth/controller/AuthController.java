@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.auth.entity.Code;
-import org.example.auth.entity.Response;
-import org.example.auth.entity.User;
-import org.example.auth.entity.UserRegisterDTO;
+import org.example.auth.entity.*;
 import org.example.auth.exceptions.UserDontExistException;
 import org.example.auth.exceptions.UserExistingWithMail;
 import org.example.auth.exceptions.UserExistingWithName;
@@ -50,6 +47,16 @@ public class AuthController {
     public ResponseEntity<Response> activateUser(@RequestParam String uid) {
         try {
             userService.activateUser(uid);
+            return ResponseEntity.ok(new Response(Code.SUCCESS));
+        } catch (UserDontExistException e) {
+            return ResponseEntity.status(400).body(new Response(Code.USER_NOT_EXIST));
+        }
+    }
+
+    @RequestMapping(path = "/reset-password", method = RequestMethod.POST)
+    public ResponseEntity<Response> sendMailRecovery(@RequestBody ResetPasswordData resetPasswordData) {
+        try {
+            userService.recoveryPassword(resetPasswordData.getEmail());
             return ResponseEntity.ok(new Response(Code.SUCCESS));
         } catch (UserDontExistException e) {
             return ResponseEntity.status(400).body(new Response(Code.USER_NOT_EXIST));
