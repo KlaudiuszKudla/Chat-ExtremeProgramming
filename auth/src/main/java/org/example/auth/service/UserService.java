@@ -27,6 +27,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final CookiService cookiService;
+    private final EmailService emailService;
     private final JwtService jwtService;
 
     @Value("${jwt.exp}")
@@ -54,6 +55,7 @@ public class UserService {
         user.setRole(Role.USER);
 
         saveUser(user);
+        emailService.sendActivation(user);
     }
 
     public ResponseEntity<?> login(HttpServletResponse response, User authRequest) {
