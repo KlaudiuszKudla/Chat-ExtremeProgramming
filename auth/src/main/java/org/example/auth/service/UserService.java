@@ -129,6 +129,29 @@ public class UserService {
 
     }
 
+    public void authorize(HttpServletRequest request) throws UserDontExistException{
+        String token = null;
+        String refresh = null;
+        if (request.getCookies() != null){
+            for (Cookie value : Arrays.stream(request.getCookies()).toList()) {
+                if (value.getName().equals("Authorization")) {
+                    token = value.getValue();
+                } else if (value.getName().equals("refresh")) {
+                    refresh = value.getValue();
+                }
+            }
+        }else {
+            throw new IllegalArgumentException("Token can't be null");
+        }
+        if (token != null && !token.isEmpty()){
+            String subject = jwtService.getSubject(token);
+            userRepository.findUserByLoginAndLockAndEnabledAndIsAdmin(subject).orElseThrow(()->new UserDontExistException("User not found"));
+        } else if (refresh != null && !refresh.isEmpty()) {
+            String subject = jwtService.getSubject(refresh);
+            userRepository.findUserByLoginAndLockAndEnabledAndIsAdmin(subject).orElseThrow(()->new UserDontExistException("User not found"));
+        }
+    }
+
     public void recoveryPassword(String email) throws UserDontExistException{
         User user = userRepository.findUserByEmail(email).orElse(null);
         if (user != null){

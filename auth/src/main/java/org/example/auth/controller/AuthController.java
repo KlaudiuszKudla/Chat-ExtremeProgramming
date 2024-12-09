@@ -56,6 +56,19 @@ public class AuthController {
         }
     }
 
+    @RequestMapping(path = "/authorize", method = RequestMethod.GET)
+    public ResponseEntity<Response> authorize(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            userService.validateToken(request, response);
+            userService.authorize(request);
+            return ResponseEntity.ok(new Response(Code.PERMIT));
+        } catch (IllegalArgumentException | ExpiredJwtException e) {
+            return ResponseEntity.status(401).body(new Response(Code.TOKEN_NULL_OR_EXPIRED));
+        } catch (UserDontExistException e1) {
+            return ResponseEntity.status(401).body(new Response(Code.USER_NOT_EXIST_WITH_NAME_OR_ACCOUNT_NOT_ACTIVATED));
+        }
+    }
+
     @RequestMapping(path = "/activate", method = RequestMethod.GET)
     public ResponseEntity<Response> activateUser(@RequestParam String uid) {
         try {
