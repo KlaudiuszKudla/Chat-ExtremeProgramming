@@ -1,5 +1,7 @@
 package org.example.auth.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,17 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody User user, HttpServletResponse response) {
         log.info("--TRY LOGIN USER");
         return userService.login(response, user);
+    }
+
+
+    @RequestMapping(path = "/validate", method = RequestMethod.GET)
+    public ResponseEntity<Response> validateToken(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            userService.validateToken(request, response);
+            return ResponseEntity.ok(new Response(Code.PERMIT));
+        } catch (IllegalArgumentException | ExpiredJwtException e) {
+            return ResponseEntity.status(401).body(new Response(Code.TOKEN_NULL_OR_EXPIRED));
+        }
     }
 
     @RequestMapping(path = "/activate", method = RequestMethod.GET)

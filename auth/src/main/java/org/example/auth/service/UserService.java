@@ -1,7 +1,9 @@
 package org.example.auth.service;
 
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 @Service
@@ -98,6 +101,32 @@ public class UserService {
             }
         }
         return ResponseEntity.ok(new Response(Code.DATA_INCORRECT));
+    }
+
+    public void validateToken(HttpServletRequest request, HttpServletResponse response) throws ExpiredJwtException, IllegalArgumentException{
+        String token = null;
+        String refresh = null;
+        if (request.getCookies() != null){
+            for (Cookie value : Arrays.stream(request.getCookies()).toList()) {
+                if (value.getName().equals("Authorization")) {
+                    token = value.getValue();
+                } else if (value.getName().equals("refresh")) {
+                    refresh = value.getValue();
+                }
+            }
+        }else {
+            throw new IllegalArgumentException("Token can't be null");
+        }
+        try {
+            jwtService.validateToken(token);
+        }catch (IllegalArgumentException | ExpiredJwtException e){
+            jwtService.validateToken(refresh);
+            Cookie refreshCokkie = cookiService.generateCookie("refresh", jwtService.refreshToken(refresh,refreshExp), refreshExp);
+            Cookie cookie = cookiService.generateCookie("Authorization", jwtService.refreshToken(refresh,exp), exp);
+            response.addCookie(cookie);
+            response.addCookie(refreshCokkie);
+        }
+
     }
 
     public void recoveryPassword(String email) throws UserDontExistException{

@@ -2,6 +2,7 @@ package org.example.auth.entity;
 
 public enum Code {
     SUCCESS("Operacja zakończona sukcesem"),
+    PERMIT("Przyznano dostep"),
     USER_EXIST_WITH_NAME("Użytkownik o podanej nazwie juz istnieje"),
     USER_EXIST_WITH_MAIL("Użytkownik o podanmym mailu juz istnieje"),
     USER_NOT_EXIST("Użytkownik nie istnieje"),
