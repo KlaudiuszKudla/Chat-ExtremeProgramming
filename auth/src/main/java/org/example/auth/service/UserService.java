@@ -15,6 +15,7 @@ import org.example.auth.repository.ResetOperationsRepository;
 import org.example.auth.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -101,6 +102,34 @@ public class UserService {
             }
         }
         return ResponseEntity.ok(new Response(Code.DATA_INCORRECT));
+    }
+
+    public ResponseEntity<?> loginByToken(HttpServletRequest request, HttpServletResponse response){
+        try {
+            validateToken(request, response);
+            String refresh = null;
+            for (Cookie value : Arrays.stream(request.getCookies()).toList()) {
+                if (value.getName().equals("refresh")) {
+                    refresh = value.getValue();
+                }
+            }
+            String login = jwtService.getSubject(refresh);
+            User user = userRepository.findUserByLoginAndIsLockedFalseAndIsEnabledTrue(login).orElse(null);
+            if (user != null){
+                return ResponseEntity.ok(
+                        UserRegisterDTO
+                                .builder()
+                                .uuid(user.getUuid())
+                                .id(user.getId())
+                                .login(user.getUsername())
+                                .email(user.getEmail())
+                                .role(user.getRole())
+                                .build());
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(Code.USER_NOT_EXIST_WITH_NAME_OR_ACCOUNT_NOT_ACTIVATED));
+        }catch (ExpiredJwtException|IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response(Code.TOKEN_NULL_OR_EXPIRED));
+        }
     }
 
     public void validateToken(HttpServletRequest request, HttpServletResponse response) throws ExpiredJwtException, IllegalArgumentException{
