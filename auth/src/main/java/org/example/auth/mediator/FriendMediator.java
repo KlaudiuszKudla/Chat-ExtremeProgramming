@@ -22,6 +22,18 @@ public class FriendMediator {
         friendService.addFriend(request);
     }
 
+    public void acceptFriend(FriendRequest request) {
+        friendService.acceptFriend(request);
+    }
+
+    public ResponseEntity<List<UserChatDTO>> findFriends(Long id) {
+        List<UserChatDTO> userChatDTOS = new ArrayList<>();
+        friendService.getFriends(id).forEach(value ->{
+            userChatDTOS.add(userToUserChatDTO.toUserChatDTO(value));
+        });
+        return ResponseEntity.ok(userChatDTOS);
+    }
+
     public ResponseEntity<List<UserChatDTO>> findFriendsSentRequest(Long id) {
         List<UserChatDTO> userChatDTOS = new ArrayList<>();
         friendService.getFriendsSentRequest(id).forEach(value ->{

@@ -8,6 +8,7 @@ public enum Code {
     USER_NOT_EXIST("Użytkownik nie istnieje"),
     USER_NOT_EXIST_WITH_NAME_OR_ACCOUNT_NOT_ACTIVATED("Podany uzytkownik o danej nazwie nie istnieje lub nie aktywował konta"),
     FRIEND_REQUEST_SENT("Wysłano zaproszenie do znajomych"),
+    FRIEND_REQUEST_ACCEPTED("Zaakceptowano zaproszenie do znajomych"),
     DATA_INCORRECT("Podane dane są nieprawidłowe"),
     TOKEN_NULL_OR_EXPIRED("Wskazany token jest pusty lub nie ważny");
 

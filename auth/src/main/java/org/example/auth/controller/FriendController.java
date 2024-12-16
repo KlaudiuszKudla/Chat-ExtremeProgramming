@@ -37,5 +37,17 @@ public class FriendController {
         return friendMediator.findFriendsSentRequest(userId);
     }
 
+    @RequestMapping(value = "acceptFriend", method = RequestMethod.PATCH)
+    public ResponseEntity<Response> acceptFriend(@RequestBody FriendRequest request){
+        log.info("Start adding friend");
+        friendMediator.acceptFriend(request);
+        return ResponseEntity.ok(new Response(Code.FRIEND_REQUEST_ACCEPTED));
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<UserChatDTO>> getFriends(@RequestParam Long userId){
+        return friendMediator.findFriends(userId);
+    }
+
 
 }

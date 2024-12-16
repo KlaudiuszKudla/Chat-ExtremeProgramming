@@ -1,5 +1,6 @@
 package org.example.auth.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.auth.entity.FriendRequest;
@@ -24,6 +25,15 @@ public class FriendService {
             user.addFriend(friend);
             userRepository.saveAndFlush(user);
         }
+    }
+
+    public List<User> getFriends(Long id) {
+        return userRepository.findFriendsByUserId(id).orElse(null);
+    }
+
+    @Transactional
+    public void acceptFriend(FriendRequest request) {
+        userRepository.acceptFriendship(request.getUserId(), request.getFriendId());
     }
 
     public List<User> getFriendsSentRequest(Long id) {
