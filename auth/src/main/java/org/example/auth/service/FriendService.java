@@ -7,6 +7,8 @@ import org.example.auth.entity.User;
 import org.example.auth.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,15 @@ public class FriendService {
             userRepository.saveAndFlush(user);
         }
     }
+
+    public List<User> getFriendsSentRequest(Long id) {
+        return userRepository.findFriendsByIdAndIsAcceptedByFriendFalse(id).orElse(null);
+    }
+
+    public  List<User> getFriendsRequest(Long id) {
+        return userRepository.findFriendsByIdAndIsAcceptedByUserFalse(id).orElse(null);
+    }
+
 
 
 }
