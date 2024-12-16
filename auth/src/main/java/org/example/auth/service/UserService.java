@@ -104,6 +104,18 @@ public class UserService {
         return ResponseEntity.ok(new Response(Code.DATA_INCORRECT));
     }
 
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response){
+        Cookie cookie = cookiService.removeCookie(request.getCookies(),"Authorization");
+        if (cookie != null){
+            response.addCookie(cookie);
+        }
+        cookie = cookiService.removeCookie(request.getCookies(),"refresh");
+        if (cookie != null){
+            response.addCookie(cookie);
+        }
+        return  ResponseEntity.ok(new Response(Code.SUCCESS));
+    }
+
     public ResponseEntity<?> loginByToken(HttpServletRequest request, HttpServletResponse response){
         try {
             validateToken(request, response);

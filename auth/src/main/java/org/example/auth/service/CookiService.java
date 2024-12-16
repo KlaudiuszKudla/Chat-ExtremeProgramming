@@ -16,4 +16,15 @@ public class CookiService {
         return cookie;
     }
 
+    public Cookie removeCookie(Cookie[] cookies, String name){
+        for (Cookie cookie:cookies){
+            if (cookie.getName().equals(name)){
+                cookie.setMaxAge(0);
+                cookie.setHttpOnly(true);
+                return cookie;
+            }
+        }
+        return null;
+    }
+
 }
