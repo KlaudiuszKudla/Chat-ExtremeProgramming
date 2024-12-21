@@ -117,4 +117,9 @@ public class User implements UserDetails {
         friend.getFriends().add(this);
     }
 
+    public void removeFriend(User friend){
+        friends.remove(friend);
+        friend.getFriends().remove(this);
+    }
+
 }

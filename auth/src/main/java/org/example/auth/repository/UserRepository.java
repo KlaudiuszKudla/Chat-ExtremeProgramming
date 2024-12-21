@@ -21,6 +21,10 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query(nativeQuery = true, value = "SELECT * FROM users where login=?1 and is_locked=false and is_enabled=true and role='ADMIN'")
     Optional<User> findUserByLoginAndLockAndEnabledAndIsAdmin(String login);
 
+    @Query(nativeQuery = true, value = "UPDATE user_friends SET is_blocked = true WHERE user_id=?1 AND friend_id=?2")
+    void blockFriend(Long userId, Long friendId);
+
+
     @Modifying
     @Query(nativeQuery = true, value = "UPDATE user_friends SET is_accepted = true WHERE user_id=?1 AND friend_id=?2")
     void acceptFriendship(Long userId, Long friendID);

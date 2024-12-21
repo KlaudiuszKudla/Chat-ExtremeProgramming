@@ -44,6 +44,21 @@ public class FriendService {
         return userRepository.findFriendsByIdAndIsAcceptedByUserFalse(id).orElse(null);
     }
 
+    @Transactional
+    public void blockFriend(FriendRequest request) {
+        userRepository.blockFriend(request.getUserId(), request.getFriendId());
+    }
+
+
+    public void deteteFriend(FriendRequest request) {
+        User user = userRepository.findUserById(request.getUserId()).orElse(null);
+        User friend = userRepository.findUserById(request.getFriendId()).orElse(null);
+        if(user != null && friend != null){
+            user.removeFriend(friend);
+        }
+        userRepository.saveAndFlush(user);
+    }
+
 
 
 }

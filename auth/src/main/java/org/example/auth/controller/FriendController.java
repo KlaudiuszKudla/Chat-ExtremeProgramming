@@ -49,5 +49,17 @@ public class FriendController {
         return friendMediator.findFriends(userId);
     }
 
+    @RequestMapping(value = "blockFriend", method = RequestMethod.PATCH)
+    public ResponseEntity<Response> blockFriend(@RequestBody FriendRequest request){
+        friendMediator.blockFriend(request);
+        return ResponseEntity.ok(new Response(Code.FRIEND_BLOCKED));
+    }
+
+    @RequestMapping(value = "deleteFriend",method = RequestMethod.POST)
+    public ResponseEntity<Response> deleteFriend(@RequestBody FriendRequest request){
+        friendMediator.deleteFriend(request);
+        return ResponseEntity.ok(new Response(Code.FRIEND_DELETED));
+    }
+
 
 }

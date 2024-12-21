@@ -26,6 +26,14 @@ public class FriendMediator {
         friendService.acceptFriend(request);
     }
 
+    public void blockFriend(FriendRequest request) {
+        friendService.blockFriend(request);
+    }
+
+    public void deleteFriend(FriendRequest request) {
+        friendService.deteteFriend(request);
+    }
+
     public ResponseEntity<List<UserChatDTO>> findFriends(Long id) {
         List<UserChatDTO> userChatDTOS = new ArrayList<>();
         friendService.getFriends(id).forEach(value ->{
