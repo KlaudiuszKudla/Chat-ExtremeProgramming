@@ -10,7 +10,9 @@ public enum Code {
     FRIEND_REQUEST_SENT("Wysłano zaproszenie do znajomych"),
     FRIEND_REQUEST_ACCEPTED("Zaakceptowano zaproszenie do znajomych"),
     DATA_INCORRECT("Podane dane są nieprawidłowe"),
-    TOKEN_NULL_OR_EXPIRED("Wskazany token jest pusty lub nie ważny");
+    TOKEN_NULL_OR_EXPIRED("Wskazany token jest pusty lub nie ważny"),
+    FRIEND_BLOCKED("Użytkownik został zablokowany"),
+    FRIEND_DELETED("Użytkownik został usunięty z listy przyjaciół");
 
     public final String label;
     private Code(String label){
